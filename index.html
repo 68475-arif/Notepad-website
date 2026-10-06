@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NoteSpace - A modern productivity note management application.">
+    <title>NoteSpace - Modern Notes Manager</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app">
+
+        <!-- ==================== HEADER ==================== -->
+        <header class="topbar">
+            <div class="brand-area">
+                <button
+                    class="icon-btn mobile-menu-btn"
+                    id="mobileMenuBtn"
+                    type="button"
+                    aria-label="Open menu"
+                    title="Open menu"
+                >
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div class="brand">
+                    <div class="brand-icon">
+                        <i class="fa-solid fa-note-sticky"></i>
+                    </div>
+                    <div>
+                        <h1>NoteSpace</h1>
+                        <span>Smart notes, simply organized</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button
+                    class="header-search-btn"
+                    id="headerSearchBtn"
+                    type="button"
+                    title="Search notes"
+                >
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Search</span>
+                    <kbd>Ctrl K</kbd>
+                </button>
+
+                <button
+                    class="primary-btn"
+                    id="headerNewNoteBtn"
+                    type="button"
+                >
+                    <i class="fa-solid fa-plus"></i>
+                    <span>New Note</span>
+                </button>
+
+                <button
+                    class="icon-btn theme-btn"
+                    id="themeToggle"
+                    type="button"
+                    aria-label="Toggle theme"
+                    title="Toggle dark/light mode"
+                >
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- ==================== APP BODY ==================== -->
+        <div class="app-body">
+
+            <!-- Overlay for mobile sidebar -->
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+            <!-- ==================== SIDEBAR ==================== -->
+            <aside class="sidebar" id="sidebar">
+
+                <div class="sidebar-header">
+                    <span>Workspace</span>
+
+                    <button
+                        class="icon-btn sidebar-close-btn"
+                        id="sidebarCloseBtn"
+                        type="button"
+                        aria-label="Close menu"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <nav class="sidebar-nav" aria-label="Notes navigation">
+
+                    <button
+                        class="nav-item active"
+                        type="button"
+                        data-view="all"
+                    >
+                        <span class="nav-icon">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </span>
+                        <span class="nav-label">All Notes</span>
+                        <span class="nav-count" id="allCount">0</span>
+                    </button>
+
+                    <button
+                        class="nav-item"
+                        type="button"
+                        data-view="pinned"
+                    >
+                        <span class="nav-icon">
+                            <i class="fa-solid fa-thumbtack"></i>
+                        </span>
+                        <span class="nav-label">Pinned Notes</span>
+                        <span class="nav-count" id="pinnedCount">0</span>
+                    </button>
+
+                    <button
+                        class="nav-item"
+                        type="button"
+                        data-view="favorites"
+                    >
+                        <span class="nav-icon">
+                            <i class="fa-solid fa-star"></i>
+                        </span>
+                        <span class="nav-label">Favorites</span>
+                        <span class="nav-count" id="favoriteCount">0</span>
+                    </button>
+
+                    <button
+                        class="nav-item"
+                        type="button"
+                        data-view="recent"
+                    >
+                        <span class="nav-icon">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </span>
+                        <span class="nav-label">Recently Updated</span>
+                        <span class="nav-count" id="recentCount">0</span>
+                    </button>
+
+                    <button
+                        class="nav-item"
+                        type="button"
+                        data-view="trash"
+                    >
+                        <span class="nav-icon">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </span>
+                        <span class="nav-label">Recently Deleted</span>
+                        <span class="nav-count" id="trashCount">0</span>
+                    </button>
+
+                </nav>
+
+                <div class="category-section">
+                    <div class="section-heading">
+                        <span>Categories</span>
+
+                        <button
+                            class="small-icon-btn"
+                            id="addCategoryBtn"
+                            type="button"
+                            title="Add category"
+                            aria-label="Add category"
+                        >
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+
+                    <div class="category-list" id="categoryList"></div>
+                </div>
+
+                <div class="sidebar-footer">
+                    <div class="storage-status">
+                        <div class="storage-icon">
+                            <i class="fa-solid fa-cloud"></i>
+                        </div>
+                        <div>
+                            <strong>Local Storage</strong>
+                            <span>Your notes are saved locally</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- ==================== MAIN ==================== -->
+            <main class="main-content">
+
+                <div class="dashboard-header">
+
+                    <div class="page-heading">
+                        <div>
+                            <p class="eyebrow" id="pageEyebrow">YOUR WORKSPACE</p>
+                            <h2 id="pageTitle">All Notes</h2>
+                            <p id="pageSubtitle">Keep your thoughts organized and accessible.</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-actions">
+                        <button
+                            class="secondary-btn"
+                            id="mainNewNoteBtn"
+                            type="button"
+                        >
+                            <i class="fa-solid fa-plus"></i>
+                            New Note
+                        </button>
+
+                        <button
+                            class="danger-outline-btn hidden"
+                            id="emptyTrashBtn"
+                            type="button"
+                        >
+                            <i class="fa-solid fa-trash-can"></i>
+                            Empty Trash
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="notes-toolbar">
+
+                    <div class="search-box" id="mainSearchBox">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            id="searchInput"
+                            type="search"
+                            placeholder="Search notes, content or categories..."
+                            autocomplete="off"
+                            aria-label="Search notes"
+                        >
+                        <button
+                            class="clear-search hidden"
+                            id="clearSearchBtn"
+                            type="button"
+                            aria-label="Clear search"
+                        >
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="toolbar-right">
+
+                        <div class="select-wrapper">
+                            <i class="fa-solid fa-arrow-down-wide-short"></i>
+                            <select id="sortSelect" aria-label="Sort notes">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="az">A-Z</option>
+                                <option value="za">Z-A</option>
+                                <option value="updated">Recently Updated</option>
+                            </select>
+                        </div>
+
+                        <div class="view-switcher">
+                            <button
+                                class="view-btn active"
+                                id="gridViewBtn"
+                                type="button"
+                                title="Grid view"
+                                aria-label="Grid view"
+                            >
+                                <i class="fa-solid fa-grip"></i>
+                            </button>
+
+                            <button
+                                class="view-btn"
+                                id="listViewBtn"
+                                type="button"
+                                title="List view"
+                                aria-label="List view"
+                            >
+                                <i class="fa-solid fa-list"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <section
+                    class="notes-container grid-view"
+                    id="notesContainer"
+                    aria-live="polite"
+                ></section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ==================== EDITOR MODAL ==================== -->
+    <div class="modal-backdrop hidden" id="editorBackdrop">
+        <div
+            class="editor-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="editorTitle"
+        >
+
+            <div class="editor-header">
+                <div>
+                    <span class="editor-eyebrow" id="editorEyebrow">NEW NOTE</span>
+                    <h2 id="editorTitle">Create a new note</h2>
+                </div>
+
+                <div class="editor-header-actions">
+                    <span class="save-status" id="saveStatus">
+                        <i class="fa-solid fa-cloud"></i>
+                        Saved
+                    </span>
+
+                    <button
+                        class="icon-btn"
+                        id="closeEditorBtn"
+                        type="button"
+                        aria-label="Close editor"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="editor-body">
+
+                <div class="form-group">
+                    <label for="noteTitleInput">Title</label>
+                    <input
+                        id="noteTitleInput"
+                        type="text"
+                        maxlength="120"
+                        placeholder="Give your note a title..."
+                        autocomplete="off"
+                    >
+                    <small class="field-error hidden" id="titleError">
+                        Please enter a note title.
+                    </small>
+                </div>
+
+                <div class="editor-row">
+
+                    <div class="form-group">
+                        <label for="noteCategoryInput">Category</label>
+                        <select id="noteCategoryInput"></select>
+                        <small class="field-error hidden" id="categoryError">
+                            Please select a category.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Note Color</label>
+
+                        <div class="color-picker" id="colorPicker">
+                            <button
+                                class="color-option active"
+                                type="button"
+                                data-color="default"
+                                title="Default"
+                                aria-label="Default color"
+                            ></button>
+
+                            <button
+                                class="color-option"
+                                type="button"
+                                data-color="yellow"
+                                title="Yellow"
+                                aria-label="Yellow"
+                            ></button>
+
+                            <button
+                                class="color-option"
+                                type="button"
+                                data-color="blue"
+                                title="Blue"
+                                aria-label="Blue"
+                            ></button>
+
+                            <button
+                                class="color-option"
+                                type="button"
+                                data-color="green"
+                                title="Green"
+                                aria-label="Green"
+                            ></button>
+
+                            <button
+                                class="color-option"
+                                type="button"
+                                data-color="purple"
+                                title="Purple"
+                                aria-label="Purple"
+                            ></button>
+
+                            <button
+                                class="color-option"
+                                type="button"
+                                data-color="pink"
+                                title="Pink"
+                                aria-label="Pink"
+                            ></button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-group content-group">
+                    <div class="content-label-row">
+                        <label for="noteContentInput">Content</label>
+                        <span id="characterCount">0 / 5000 characters</span>
+                    </div>
+
+                    <textarea
+                        id="noteContentInput"
+                        maxlength="5000"
+                        placeholder="Start writing your note..."
+                        spellcheck="true"
+                    ></textarea>
+
+                    <small class="field-error hidden" id="contentError">
+                        Please enter some content.
+                    </small>
+                </div>
+
+                <div class="editor-info" id="editorInfo">
+                    <span>
+                        <i class="fa-regular fa-clock"></i>
+                        <span id="editorDateInfo">Not saved yet</span>
+                    </span>
+
+                    <span class="editor-shortcuts">
+                        <kbd>Ctrl</kbd>
+                        <span>+</span>
+                        <kbd>S</kbd>
+                        <span>to save</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="editor-footer">
+
+                <div class="editor-left-actions">
+                    <button
+                        class="text-btn danger-text"
+                        id="editorDeleteBtn"
+                        type="button"
+                    >
+                        <i class="fa-solid fa-trash-can"></i>
+                        Delete
+                    </button>
+                </div>
+
+                <div class="editor-right-actions">
+
+                    <button
+                        class="secondary-btn"
+                        id="editorCopyBtn"
+                        type="button"
+                    >
+                        <i class="fa-regular fa-copy"></i>
+                        Copy
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        id="editorExportBtn"
+                        type="button"
+                    >
+                        <i class="fa-solid fa-download"></i>
+                        Export
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        id="editorFavoriteBtn"
+                        type="button"
+                    >
+                        <i class="fa-regular fa-star"></i>
+                        Favorite
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        id="editorPinBtn"
+                        type="button"
+                    >
+                        <i class="fa-solid fa-thumbtack"></i>
+                        Pin
+                    </button>
+
+                    <button
+                        class="secondary-btn"
+                        id="editorCancelBtn"
+                        type="button"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        class="primary-btn"
+                        id="editorSaveBtn"
+                        type="button"
+                    >
+                        <i class="fa-solid fa-check"></i>
+                        Save Note
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CONFIRMATION MODAL ==================== -->
+    <div class="modal-backdrop hidden" id="confirmBackdrop">
+        <div class="confirm-modal" role="dialog" aria-modal="true">
+
+            <div class="confirm-icon" id="confirmIcon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <h2 id="confirmTitle">Are you sure?</h2>
+
+            <p id="confirmMessage">
+                This action cannot be undone.
+            </p>
+
+            <div class="confirm-actions">
+                <button
+                    class="secondary-btn"
+                    id="confirmCancelBtn"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    class="danger-btn"
+                    id="confirmActionBtn"
+                    type="button"
+                >
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TOAST ==================== -->
+    <div
+        class="toast-container"
+        id="toastContainer"
+        aria-live="polite"
+        aria-atomic="true"
+    ></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
